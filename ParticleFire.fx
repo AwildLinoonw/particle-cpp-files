@@ -131,19 +131,19 @@ void StreamOutGS(point Particle gin[1],
 		if( gin[0].Age > 0.005f )
 		{
 			float3 vRandom = RandUnitVec3(id);
-			float3 vRandom2 = RandUnitVec3(0.01f);
+			float3 vRandom2 = RandUnitVec3(id);
 			vRandom.x *= 0.5f;
 			vRandom.z *= 0.5f;
 			
 			Particle p;
 			p.InitialPosW = gEmitPosW.xyz;
-			p.InitialVelW = vRandom2;
+			p.InitialVelW = vRandom2 * 2;
 			p.SizeW       = float2(3.0f, 3.0f);
 			p.Age         = 0.0f;
 			
-			p.Type = (vRandom.z > 0.2f) ? PT_SMOKE : PT_FLARE;
+			p.Type = (vRandom.x > 0.2f) ? PT_SMOKE : PT_FLARE;
 			//p.Type = PT_FLARE;
-			p.RotSpeed	  = vRandom.x;
+			p.RotSpeed	  = vRandom.x * 10000;
 			
 			ptStream.Append(p);
 			
@@ -209,7 +209,7 @@ VertexOut DrawVS(Particle vin)
 	
 	vout.SizeW = vin.Type == PT_FLARE ? vin.SizeW : vin.SizeW * 0.5;
 	vout.Type  = vin.Type;
-	vout.Angle = vin.RotSpeed * gGameTime;
+	vout.Angle = vin.RotSpeed * vin.Age;
 	
 	return vout;
 }
@@ -245,10 +245,10 @@ void DrawGS(point VertexOut gin[1],
 		float halfHeight = 0.5f*gin[0].SizeW.y;
 	
 		float4 v[4];
-		v[0] = float4(gin[0].PosW + (sin(gin[0].Angle + 135) *halfWidth*right) + (cos(gin[0].Angle + 135) *halfHeight*up), 1.0f);
-		v[1] = float4(gin[0].PosW + (sin(gin[0].Angle + 45)  *halfWidth*right) + (cos(gin[0].Angle + 45)  *halfHeight*up), 1.0f);
-		v[2] = float4(gin[0].PosW + (sin(gin[0].Angle + 225) *halfWidth*right) + (cos(gin[0].Angle + 225) *halfHeight*up), 1.0f);
-		v[3] = float4(gin[0].PosW + (sin(gin[0].Angle + 315) *halfWidth*right) + (cos(gin[0].Angle + 315) *halfHeight*up), 1.0f);
+		v[0] = float4(gin[0].PosW + (sin(gin[0].Angle + radians(135)) *halfWidth*right) + (cos(gin[0].Angle + radians(135)) *halfHeight*up), 1.0f);
+		v[1] = float4(gin[0].PosW + (sin(gin[0].Angle + radians(45))  *halfWidth*right) + (cos(gin[0].Angle + radians(45))  *halfHeight*up), 1.0f);
+		v[2] = float4(gin[0].PosW + (sin(gin[0].Angle + radians(225)) *halfWidth*right) + (cos(gin[0].Angle + radians(225)) *halfHeight*up), 1.0f);
+		v[3] = float4(gin[0].PosW + (sin(gin[0].Angle + radians(315)) *halfWidth*right) + (cos(gin[0].Angle + radians(315)) *halfHeight*up), 1.0f);
 		
 		//
 		// Transform quad vertices to world space and output 
